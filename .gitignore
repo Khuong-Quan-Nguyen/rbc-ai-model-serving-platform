@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+.ruff_cache/
+*.egg-info/
+.DS_Store
+.claude/settings.local.json

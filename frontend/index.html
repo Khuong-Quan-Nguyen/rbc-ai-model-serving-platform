@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forecast Service — Ops Panel</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="panel-frame">
+
+    <header class="rail">
+      <div class="rail-id">
+        <span class="rail-mark">FS</span>
+        <div class="rail-titles">
+          <h1>forecast&#8209;service</h1>
+          <p class="rail-sub">holt&#8209;winters model &middot; ops monitoring panel</p>
+        </div>
+      </div>
+      <div class="rail-status" id="overall-status">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">CONNECTING</span>
+      </div>
+    </header>
+
+    <main class="grid">
+
+      <!-- Big readouts -->
+      <section class="readouts">
+        <div class="gauge">
+          <span class="gauge-label">uptime</span>
+          <span class="gauge-value" id="val-uptime">&mdash;</span>
+        </div>
+        <div class="gauge">
+          <span class="gauge-label">requests (window)</span>
+          <span class="gauge-value" id="val-requests">&mdash;</span>
+        </div>
+        <div class="gauge gauge--warn" id="gauge-errors">
+          <span class="gauge-label">errors (window)</span>
+          <span class="gauge-value" id="val-errors">&mdash;</span>
+        </div>
+        <div class="gauge">
+          <span class="gauge-label">avg latency</span>
+          <span class="gauge-value" id="val-latency">&mdash;<small>ms</small></span>
+        </div>
+      </section>
+
+      <!-- Latency sparkline -->
+      <section class="scope-card">
+        <div class="card-head">
+          <h2>latency trace</h2>
+          <span class="card-hint">last 15 requests, ms</span>
+        </div>
+        <svg id="latency-scope" viewBox="0 0 600 140" preserveAspectRatio="none" aria-label="Latency over recent requests"></svg>
+      </section>
+
+      <!-- Try it panel -->
+      <section class="try-card">
+        <div class="card-head">
+          <h2>run a forecast</h2>
+          <span class="card-hint">POST /v1/forecast</span>
+        </div>
+        <label class="field-label" for="series-input">series (comma-separated)</label>
+        <input id="series-input" type="text" value="10,12,13,12,15,17,16,19,21,20" />
+        <div class="try-row">
+          <div class="field-inline">
+            <label class="field-label" for="horizon-input">horizon</label>
+            <input id="horizon-input" type="number" value="4" min="1" max="30" />
+          </div>
+          <button id="run-forecast">RUN</button>
+        </div>
+        <svg id="forecast-plot" viewBox="0 0 600 140" preserveAspectRatio="none" aria-label="Forecast output plot"></svg>
+        <p class="try-result" id="try-result"></p>
+      </section>
+
+      <!-- Request log -->
+      <section class="log-card">
+        <div class="card-head">
+          <h2>request log</h2>
+          <span class="card-hint">live tail</span>
+        </div>
+        <div class="log-stream" id="log-stream"></div>
+      </section>
+
+    </main>
+
+    <footer class="rail rail--footer">
+      <span>model_version: <b>holt-winters-v1</b></span>
+      <span>endpoint: <code id="endpoint-label">http://localhost:8000</code></span>
+    </footer>
+
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>

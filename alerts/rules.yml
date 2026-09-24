@@ -1,0 +1,52 @@
+# Example alerting rules for the forecasting service.
+#
+# These demonstrate the kind of SLO-driven alerts an on-call engineer would
+# rely on: error rate, latency, and model-fit degradation. Loaded by
+# Prometheus via deploy/prometheus.yml when running docker-compose.
+groups:
+  - name: forecast-service.rules
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(forecast_service_requests_total{status_code=~"5.."}[5m]))
+          /
+          sum(rate(forecast_service_requests_total[5m]))
+          > 0.05
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "Forecast service error rate above 5%"
+          description: "More than 5% of requests have returned 5xx over the last 5 minutes."
+
+      - alert: HighLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(forecast_service_request_latency_seconds_bucket[5m])) by (le)
+          ) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 request latency above 1s"
+          description: "95th percentile request latency has exceeded 1 second for 5 minutes."
+
+      - alert: ForecastRejectionSpike
+        expr: |
+          increase(forecast_service_forecast_errors_total[15m]) > 20
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Spike in forecast validation errors"
+          description: "More than 20 forecast requests were rejected (bad input/model errors) in 15 minutes. May indicate an upstream data quality issue."
+
+      - alert: ServiceDown
+        expr: up{job="forecast-service"} == 0
+        for: 1m
+        labels:
+          severity: page
+        annotations:
+          summary: "Forecast service is down"
+          description: "Prometheus cannot scrape the forecast service /metrics endpoint."

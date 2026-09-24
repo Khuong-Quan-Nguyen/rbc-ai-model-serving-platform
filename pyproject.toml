@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["B008"]  # FastAPI's Depends()/Body() pattern relies on call-in-default-arg
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
