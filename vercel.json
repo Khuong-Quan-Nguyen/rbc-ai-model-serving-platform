@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "frontend",
+  "framework": null,
+  "rewrites": [{ "source": "/", "destination": "/index.html" }]
+}

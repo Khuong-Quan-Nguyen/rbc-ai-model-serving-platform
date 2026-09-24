@@ -2,9 +2,24 @@
 // metrics and lets the user fire a live /v1/forecast request from the browser.
 // No build step, no dependencies — kept simple on purpose for a demo panel.
 
-const API_BASE = window.location.origin.includes("null") || window.location.protocol === "file:"
-  ? "http://localhost:8000"
-  : window.location.origin;
+// Three ways this page gets served: opened straight off disk, served by a
+// separate static server in local dev (any port), or served from the same
+// origin as the API in a container. Only the last can assume same-origin, so
+// treat "served from a port that isn't the API's" as local dev.
+// On a static host (Vercel) there is no API on this origin, so the backend
+// URL comes from ?api=https://host — or edit API_FALLBACK below once the
+// backend has a permanent home.
+const API_PORT = "8000";
+const API_FALLBACK = "";
+const apiParam = new URLSearchParams(window.location.search).get("api");
+const servedFromApi =
+  window.location.protocol.startsWith("http") &&
+  (window.location.port === API_PORT || window.location.port === "");
+const API_BASE =
+  (apiParam && apiParam.replace(/\/$/, "")) ||
+  (servedFromApi ? window.location.origin : "") ||
+  API_FALLBACK ||
+  `http://localhost:${API_PORT}`;
 
 document.getElementById("endpoint-label").textContent = API_BASE;
 
